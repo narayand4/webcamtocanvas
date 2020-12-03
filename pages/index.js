@@ -1,34 +1,60 @@
-import React, { useRef, useCallback, useState } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 import Head from 'next/head'
 import firebase from 'firebase';
 import Webcam from "react-webcam";
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
-  const webcamRef = useRef(null);
-  const webcamImageRef = useRef(null);
+  const webcamRef = useRef(null)
+  const webcamImageRef = useRef(null)
+  const [firebaseInit, setFirebaseInit] = useState(null)
+  const [firestoreDb, setFirestoreDb] = useState(null)
+
+  useEffect(() => {
+    const firebaseConfig = {
+      apiKey: process.env.apiKey,
+      authDomain: process.env.authDomain,
+      databaseURL: process.env.databaseURL,
+      projectId: process.env.projectId,
+      storageBucket: process.env.storageBucket,
+      messagingSenderId: process.env.messagingSenderId,
+      appId: process.env.appId,
+      measurementId: process.env.measurementId
+    };
+    if (!firebaseInit) {
+      firebase.initializeApp(firebaseConfig);
+      setFirebaseInit(firebase)
+    }
+    const db = firebase.firestore()
+    db.settings({ timestampsInSnapshots: true })
+    setFirestoreDb(db)
+  }, [firebaseInit])
+
+  const getCaturedImages = () => {
+    firestoreDb.collection('images').get().then((snapshot) => {
+      if (snapshot.docs) {
+        snapshot.docs.forEach(doc => {
+          console.log("data: ", doc.data())
+        })
+      }
+    })
+  }
+  const saveCapturedImage = (imageSource) => {
+    firestoreDb.collection('images').add({
+      image: imageSource
+    }).then((snapshot) => {
+      console.log("snapshot: ", snapshot)
+      webcamImageRef.current.src = imageSource
+    })
+  }
 
   const capture = useCallback(
     () => {
       const imageSrc = webcamRef.current.getScreenshot();
-      webcamImageRef.current.src = imageSrc
-      console.log("imageSrc: ", imageSrc)
+      saveCapturedImage(imageSrc)
     },
     [webcamRef]
   );
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyC3WFCfojNqL61AmsT3FHrm2aWCgzTYP8M",
-    authDomain: "webcamtocanvas.firebaseapp.com",
-    databaseURL: "https://webcamtocanvas.firebaseio.com",
-    projectId: "webcamtocanvas",
-    storageBucket: "webcamtocanvas.appspot.com",
-    messagingSenderId: "452151666698",
-    appId: "1:452151666698:web:5377b5a0d2b95cd5c457f3",
-    measurementId: "G-LMKPQFETQJ"
-  };
-  const app = firebase.initializeApp(firebaseConfig);
-
 
   return (
     <div className={styles.container}>
