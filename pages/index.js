@@ -21,17 +21,25 @@ export default function Home() {
       appId: process.env.appId,
       measurementId: process.env.measurementId
     };
-    if (!firebaseInit) {
+
+    if (firebaseInit === null) {
       firebase.initializeApp(firebaseConfig);
       setFirebaseInit(firebase)
     }
+  }, [])
+
+  const setupDB = () => {
     const db = firebase.firestore()
-    db.settings({ timestampsInSnapshots: true })
+    if (firestoreDb === null) {
+      db.settings({ timestampsInSnapshots: true })
+    }
     setFirestoreDb(db)
-  }, [firebaseInit])
+    return db;
+  }
 
   const getCaturedImages = () => {
-    firestoreDb.collection('images').get().then((snapshot) => {
+    const db = setupDB()
+    db.collection('images').get().then((snapshot) => {
       if (snapshot.docs) {
         snapshot.docs.forEach(doc => {
           console.log("data: ", doc.data())
@@ -40,7 +48,8 @@ export default function Home() {
     })
   }
   const saveCapturedImage = (imageSource) => {
-    firestoreDb.collection('images').add({
+    const db = setupDB()
+    db.collection('images').add({
       image: imageSource
     }).then((snapshot) => {
       console.log("snapshot: ", snapshot)
