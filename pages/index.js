@@ -2,7 +2,7 @@ import React, { useRef, useCallback, useState, useEffect } from "react";
 import Head from 'next/head'
 import firebase from 'firebase';
 import Webcam from "react-webcam";
-import styles from '../styles/Home.module.css'
+import '~styles/Home.module.css'
 
 export default function Home() {
   const webcamRef = useRef(null)
@@ -66,31 +66,31 @@ export default function Home() {
   );
 
   return (
-    <div className={styles.container}>
+    <div className="container">
       <Head>
         <title>Webcam to Canvas</title>
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
+      <main className="main">
+        <h1 className="title">
           Webcam to Canvas
         </h1>
-        <div className={styles.grid}>
-          <div className={styles.card}>
+        <div className="grid">
+          <div className="card">
             <div>
               <Webcam screenshotFormat="image/jpeg" ref={webcamRef} />
             </div>
-            <div className={styles.alignCenter}>
-              <button className={styles.button} onClick={capture}>Capture photo</button>
+            <div className="alignCenter">
+              <button className="button" onClick={capture}>Capture photo</button>
             </div>
           </div>
-          <div className={styles.card}>
+          <div className="card">
             <img src={''} ref={webcamImageRef}></img>
           </div>
         </div>
       </main>
 
-      <footer className={styles.footer}>
+      <footer className="footer">
         &nbsp;
       </footer>
     </div>
