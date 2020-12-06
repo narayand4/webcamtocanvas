@@ -25,6 +25,7 @@ module.exports = withProgressBar(
       config.resolve.alias['~public'] = path.join(__dirname, 'public') // eslint-disable-line no-param-reassign
       config.resolve.alias['~pages'] = path.join(__dirname, 'pages') // eslint-disable-line no-param-reassign
       config.resolve.alias['~styles'] = path.join(__dirname, 'styles') // eslint-disable-line no-param-reassign
+      config.resolve.alias['~config'] = path.join(__dirname, 'config') // eslint-disable-line no-param-reassign
 
       return config
     },

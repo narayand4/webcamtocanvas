@@ -1,7 +1,8 @@
-import '../styles/globals.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/custom.css'
 
-function MyApp({ Component, pageProps }) {
+function AppContainer({ Component, pageProps }) {
   return <Component {...pageProps} />
 }
 
-export default MyApp
+export default AppContainer
