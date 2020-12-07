@@ -10,7 +10,10 @@
   "dependencies": {
     "@zeit/next-css": "^1.0.1",
     "bootstrap": "^4.5.3",
+    "browser-image-compression": "^1.0.13",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "firebase": "^8.1.1",
     "next": "10.0.3",
     "next-progressbar": "^1.0.0",
@@ -18,9 +21,8 @@
     "react-bootstrap": "^1.4.0",
     "react-dom": "17.0.1",
     "react-webcam": "^5.2.2",
-    "express": "^4.17.1",
-    "cors": "^2.8.5",
     "request": "^2.88.2",
-    "request-promise": "^4.2.6"
+    "request-promise": "^4.2.6",
+    "ws": "^6.0.0"
   }
 }

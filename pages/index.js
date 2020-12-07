@@ -1,17 +1,17 @@
-import React, { useRef, useCallback, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Head from 'next/head'
 import Webcam from "react-webcam";
 import { Card, Container, Row, Col, Button } from 'react-bootstrap';
+import imageCompression from 'browser-image-compression';
 import fire from '../config/firebase.config'
 
 export default function Home() {
+  const imagesCollection = fire.firestore().collection('images')
   const webcamRef = useRef(null)
   const [capturedImages, setCapturedImages] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
 
   const getCaturedImages = () => {
-    fire.firestore()
-      .collection('images')
+    imagesCollection.orderBy("timestamp", "desc")
       .onSnapshot(snap => {
         const images = snap.docs.map(doc => ({
           id: doc.id,
@@ -25,18 +25,33 @@ export default function Home() {
     getCaturedImages()
   }, [])
 
-  const capture = useCallback(
-    () => {
-      setIsLoading(true)
-      const imageSrc = webcamRef.current.getScreenshot();
-      fire.firestore().collection('images').add({
-        image: imageSrc
-      }).then((snapshot) => {
-        setIsLoading(false)
-      })
-    },
-    [webcamRef]
-  );
+  const onUserMedia = mediaStream => {
+    wsOpen(mediaStream)
+  }
+
+  const wsOpen = (mediaStream) => {
+    const WS_URL = `ws://localhost:${process.env.WS_PORT}`;
+    const FPS = 3;
+    const ws = new WebSocket(WS_URL);
+    ws.onopen = () => {
+      console.log(`Connected to ${WS_URL}`);
+      setInterval(() => {
+        const track = mediaStream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(track);
+        imageCapture.takePhoto().then(function (blob) {
+          imageCompression.getDataUrlFromFile(blob).then(image => {
+            imagesCollection.add({
+              image: image,
+              timestamp: new Date().getTime()
+            })
+            ws.send(image);
+          }).catch(function (error) {
+            console.log('takePhoto() error: ', error);
+          });
+        })
+      }, 1000 / FPS);
+    }
+  }
 
   return (
     <Container>
@@ -50,12 +65,7 @@ export default function Home() {
               <Card.Title><h1>Webcam to Canvas</h1></Card.Title>
               <Row>
                 <Col>
-                  <Webcam screenshotFormat="image/jpeg" ref={webcamRef} width={400} />
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Button onClick={capture}>{isLoading ? 'Saving....' : 'Capture photo'}</Button>
+                  <Webcam ref={webcamRef} width={400} onUserMedia={onUserMedia} />
                 </Col>
               </Row>
               {capturedImages && (

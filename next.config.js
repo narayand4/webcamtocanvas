@@ -14,7 +14,9 @@ module.exports = withProgressBar(
       storageBucket: process.env.storageBucket,
       messagingSenderId: process.env.messagingSenderId,
       appId: process.env.appId,
-      measurementId: process.env.measurementId
+      measurementId: process.env.measurementId,
+      PORT: process.env.PORT,
+      WS_PORT: process.env.WS_PORT,
     },
     webpack(config) {
       config.module.rules.push({
@@ -26,6 +28,7 @@ module.exports = withProgressBar(
       config.resolve.alias['~pages'] = path.join(__dirname, 'pages') // eslint-disable-line no-param-reassign
       config.resolve.alias['~styles'] = path.join(__dirname, 'styles') // eslint-disable-line no-param-reassign
       config.resolve.alias['~config'] = path.join(__dirname, 'config') // eslint-disable-line no-param-reassign
+      config.resolve.alias['~root'] = path.join(__dirname, '') // eslint-disable-line no-param-reassign
 
       return config
     },
