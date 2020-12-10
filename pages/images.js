@@ -4,19 +4,24 @@ import { Card, Container, Row, Col } from 'react-bootstrap';
 
 export default function Images() {
     const [capturedImages, setCapturedImages] = useState([])
+    const [capturedImage, setCapturedImage] = useState('')
 
     const getImages = () => {
         const WS_URL = `ws://localhost:${process.env.WS_PORT}`
         const ws = new WebSocket(WS_URL);
         ws.onopen = () => console.log(`Connected to ${WS_URL}`)
         ws.onmessage = message => {
-            setCapturedImages([message.data, ...capturedImages])
+            setCapturedImage(message.data)
         }
     }
 
     useEffect(() => {
         getImages()
     }, [])
+
+    useEffect(() => {
+        setCapturedImages([capturedImage, ...capturedImages])
+    }, [capturedImage])
 
     return (
         <Container>
