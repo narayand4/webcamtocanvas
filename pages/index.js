@@ -57,30 +57,29 @@ export default function Home() {
   }
 
   const uploadImage = async (image) => {
-    const imageId = new Date().getTime()
-    const imageName = imageId + '.png'
-    const fileRef = fire.storage().ref(collectionName + '/' + imageName)
-    await fileRef.put(image)
+    // const imageId = new Date().getTime()
+    // const imageName = imageId + '.png'
+    // const fileRef = fire.storage().ref(collectionName + '/' + imageName)
+    // await fileRef.put(image)
 
-    const imageUrl = await fileRef.getDownloadURL()
+    // const imageUrl = await fileRef.getDownloadURL()
     const imageStored = await imagesCollection.add({
-      image: imageUrl,
+      image: image,
       timestamp: new Date().getTime()
     })
-
-    return imageUrl
   }
 
   const processImage = async (mediaStream) => {
     const track = mediaStream.getVideoTracks()[0]
     const imageCapture = new ImageCapture(track)
     const blob = await imageCapture.takePhoto()
-    const compressionOptions = {
-      maxWidthOrHeight: maxWidth,
-      initialQuality: 0.5,
-    }
-    const image = await imageCompression(blob, compressionOptions)
-    const imageUrl = await uploadImage(image)
+    const imageUrl = URL.createObjectURL(blob);
+    // const compressionOptions = {
+    //   maxWidthOrHeight: maxWidth,
+    //   initialQuality: 0.5,
+    // }
+    // const image = await imageCompression(blob, compressionOptions)
+    await uploadImage(imageUrl)
     return imageUrl
   }
 
